@@ -23,6 +23,7 @@ func RootHandler() http.Handler {
 	}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "text/html")
+		w.Header().Add("Cache-Control", "public, max-age=1200, must-revalidate")
 
 		data := templateData{
 			Hostname: r.Host,
