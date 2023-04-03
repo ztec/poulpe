@@ -1,0 +1,97 @@
+format_version: 10
+pipelines:
+  poulpe-docker:
+    group: ztec.fr
+    label_template: ${COUNT}
+    lock_behavior: none
+    display_order: -1
+    materials:
+      poulpe:
+        git: ssh://git@git.riper.fr:22023/ztec/poulpe.git
+        shallow_clone: false
+        auto_update: true
+        branch: master
+    stages:
+      - build:
+          fetch_materials: true
+          keep_artifacts: false
+          clean_workspace: false
+          approval:
+            type: success
+            allow_only_on_success: false
+          jobs:
+            build-docker:
+              timeout: 0
+              resources:
+                - docker
+              tasks:
+                - exec:
+                    arguments:
+                      - -c
+                      - docker build -t git2.riper.fr/ztec/poulpe:$GO_PIPELINE_LABEL .
+                    command: /bin/bash
+                    run_if: passed
+                - exec:
+                    arguments:
+                      - -c
+                      - docker build -t git2.riper.fr/ztec/poulpe:latest .
+                    command: /bin/bash
+                    run_if: passed
+              artifacts:
+              - external:
+                  id: poulpe-img
+                  store_id: ztec
+                  configuration:
+                    options:
+                      Image: git2.riper.fr/ztec/poulpe
+                      Tag: ${GO_PIPELINE_LABEL}
+              - external:
+                  id: poulpe-latest
+                  store_id: ztec
+                  configuration:
+                    options:
+                      Image: git2.riper.fr/ztec/poulpe
+                      Tag: latest
+  poulpe-deploy:
+    group: ztec.fr
+    label_template: ${COUNT}
+    lock_behavior: none
+    display_order: -1
+    materials:
+      poulpe-docker:
+        ignore_for_scheduling: false
+        pipeline: poulpe-docker
+        stage: build
+      poulpe:
+        git: ssh://git@git.riper.fr:22023/ztec/poulpe.git
+        shallow_clone: false
+        auto_update: true
+        branch: master
+    stages:
+      - deploy:
+          fetch_materials: true
+          keep_artifacts: false
+          clean_workspace: false
+          approval:
+            type: success
+            allow_only_on_success: false
+          jobs:
+            helm-update:
+              timeout: 0
+              resources:
+                - docker
+                - kubectl
+              tasks:
+                - fetch:
+                    artifact_id: poulpe-img
+                    pipeline: poulpe-docker
+                    stage: build
+                    job: build-docker
+                    artifact_origin: external
+                    run_if: passed
+                - exec:
+                    arguments:
+                      - -c
+                      - helm3 upgrade --install --wait --set-string image.name="$ARTIFACT_IMAGE" poulpe ./helm -f helm/values.yaml --wait
+                    command: /bin/bash
+                    run_if: passed
