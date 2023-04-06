@@ -6,6 +6,7 @@ import (
 	"git2.riper.fr/ztec/poulpe/types"
 	"github.com/AkinAD/emoji"
 	bleve "github.com/blevesearch/bleve/v2"
+	"github.com/blevesearch/bleve/v2/search/query"
 	"github.com/sirupsen/logrus"
 	"os"
 	"strconv"
@@ -119,10 +120,25 @@ func (b *BleveEngine) Search(q string) (results []types.EmojiDescription, err er
 		logrus.WithField("reverse", q).Info("Reverse search")
 	}
 
-	// we create a query as bleve expect.
-	query := bleve.NewQueryStringQuery(q)
+	// we create a joinedQuery as bleve expect.
+	queires := []query.Query{}
+	// Querystring will interpret all fancy stuff
+	queryString := bleve.NewQueryStringQuery(q)
+	// Fuzzy will try to find terms near the one typed
+	fuzzyQuery := bleve.NewFuzzyQuery(q)
+	queires = append(queires, queryString, fuzzyQuery)
+
+	if len(q) > 2 {
+		// Will find anything that start by the joinedQuery
+		prefixQuery := bleve.NewPrefixQuery(q)
+		// will match anything containing the term
+		wildcardQuery := bleve.NewWildcardQuery(fmt.Sprintf("*%s*", q))
+		queires = append(queires, prefixQuery, wildcardQuery)
+	}
+	joinedQuery := bleve.NewDisjunctionQuery(queires...)
+
 	// we define the search options and limit to 200 results. This should be enough.
-	searchrequest := bleve.NewSearchRequestOptions(query, 200, 0, false)
+	searchrequest := bleve.NewSearchRequestOptions(joinedQuery, 200, 0, false)
 	// we do the search itself. This is the longest. Approximately few hundreds of us
 	searchresults, err := b.index.Search(searchrequest)
 	if err != nil {
@@ -130,17 +146,6 @@ func (b *BleveEngine) Search(q string) (results []types.EmojiDescription, err er
 		return
 	}
 
-	// If we have no results we try to do a basic fuzzy search
-	if len(searchresults.Hits) == 0 {
-		// this time, we create a fuzzy query. The rest is the same as before. CopyPasta style.
-		fuzzyQuery := bleve.NewFuzzyQuery(q)
-		searchrequest := bleve.NewSearchRequestOptions(fuzzyQuery, 200, 0, false)
-		searchresults, err = b.index.Search(searchrequest)
-		if err != nil {
-			logrus.WithError(err).Error("Could not search for emoji")
-			return
-		}
-	}
 	// we return the results. I use the index to find my original object stored in `emojis` because it's simpler. Optimisation possible.
 	for _, result := range searchresults.Hits {
 		numIndex, _ := strconv.ParseInt(result.ID, 10, 64)

@@ -44,7 +44,7 @@ func TestSearchFindAllHandsEmoji(t *testing.T) {
 	be := getEngine()
 	results, err := be.Search("hand")
 	assert.NoError(t, err)
-	assert.Equal(t, 135, len(results))
+	assert.Less(t, 135, len(results))
 }
 
 func TestSearchFindAllHappyEmoji(t *testing.T) {
@@ -92,6 +92,36 @@ func TestSearchFindDirectFromEmoji(t *testing.T) {
 	for _, emojiDesc := range results {
 		for _, alias := range emojiDesc.Aliases {
 			if alias == "hand_over_mouth" {
+				found = true
+			}
+		}
+	}
+	assert.True(t, found)
+}
+
+func TestSearchFindEmojiUsingBegining(t *testing.T) {
+	be := getEngine()
+	results, err := be.Search("grim")
+	assert.NoError(t, err)
+	found := false
+	for _, emojiDesc := range results {
+		for _, alias := range emojiDesc.Aliases {
+			if alias == "grimacing" {
+				found = true
+			}
+		}
+	}
+	assert.True(t, found)
+}
+
+func TestSearchFindEmojiUsingExactPart(t *testing.T) {
+	be := getEngine()
+	results, err := be.Search("nishe")
+	assert.NoError(t, err)
+	found := false
+	for _, emojiDesc := range results {
+		for _, alias := range emojiDesc.Aliases {
+			if alias == "astonished" {
 				found = true
 			}
 		}
