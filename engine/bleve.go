@@ -124,16 +124,16 @@ func (b *BleveEngine) Search(q string) (results []types.EmojiDescription, err er
 	queires := []query.Query{}
 	// Querystring will interpret all fancy stuff
 	queryString := bleve.NewQueryStringQuery(q)
-	// Fuzzy will try to find terms near the one typed
-	fuzzyQuery := bleve.NewFuzzyQuery(q)
-	queires = append(queires, queryString, fuzzyQuery)
+	queires = append(queires, queryString)
 
 	if len(q) > 2 {
+		// Fuzzy will try to find terms near the one typed
+		fuzzyQuery := bleve.NewFuzzyQuery(q)
 		// Will find anything that start by the joinedQuery
 		prefixQuery := bleve.NewPrefixQuery(q)
 		// will match anything containing the term
 		wildcardQuery := bleve.NewWildcardQuery(fmt.Sprintf("*%s*", q))
-		queires = append(queires, prefixQuery, wildcardQuery)
+		queires = append(queires, prefixQuery, wildcardQuery, fuzzyQuery)
 	}
 	joinedQuery := bleve.NewDisjunctionQuery(queires...)
 
