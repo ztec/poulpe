@@ -90,7 +90,7 @@ func NewMemoryBleveEngineFromEmojiList(emojiList []types.EmojiDescription) (engi
 	// we create a new indexMapping. I used the default one that will index all fields of my EmojiDescription
 	mapping := bleve.NewIndexMapping()
 	// we create the index instance
-	bleveIndex, err := bleve.New(bleveIndexFileName, mapping)
+	bleveIndex, err := bleve.NewMemOnly(mapping)
 	if err != nil {
 		return
 	}
