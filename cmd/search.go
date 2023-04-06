@@ -37,7 +37,7 @@ var search = &cobra.Command{
 				return err
 			}
 			os.MkdirAll(cachePath, 0777)
-			e, err := engine.NewBleveEngineFromEmojiList(cachePath, list)
+			e, err := engine.NewFileBleveEngineFromEmojiList(cachePath, list)
 			if err != nil {
 				logrus.WithError(err).Error("Could not start emoji search engine")
 				return err

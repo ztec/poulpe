@@ -29,7 +29,7 @@ func getEngine() BleveEngine {
 				panic(err)
 			}
 			os.MkdirAll(cachePath, 0777)
-			e, err := NewBleveEngineFromEmojiList(cachePath, list)
+			e, err := NewFileBleveEngineFromEmojiList(cachePath, list)
 			if err != nil {
 				logrus.WithError(err).Error("Could not start emoji search engine")
 				panic(err)

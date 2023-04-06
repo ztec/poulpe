@@ -53,7 +53,7 @@ func OpenBleveEngine(path string) (engine BleveEngine, err error) {
 	return
 }
 
-func NewBleveEngineFromEmojiList(path string, emojiList []types.EmojiDescription) (engine BleveEngine, err error) {
+func NewFileBleveEngineFromEmojiList(path string, emojiList []types.EmojiDescription) (engine BleveEngine, err error) {
 	logrus.Info("Creating Bleve index")
 	bleveIndexFileName := fmt.Sprintf("%s/%s", path, bleveIndexFileName)
 	emojiListFileName := fmt.Sprintf("%s/%s", path, emojisFileName)
@@ -80,6 +80,27 @@ func NewBleveEngineFromEmojiList(path string, emojiList []types.EmojiDescription
 	err = os.WriteFile(emojiListFileName, data, 0777)
 	if err != nil {
 		return
+	}
+	engine.index = bleveIndex
+	engine.emojis = emojiList
+	return
+}
+
+func NewMemoryBleveEngineFromEmojiList(emojiList []types.EmojiDescription) (engine BleveEngine, err error) {
+	// we create a new indexMapping. I used the default one that will index all fields of my EmojiDescription
+	mapping := bleve.NewIndexMapping()
+	// we create the index instance
+	bleveIndex, err := bleve.New(bleveIndexFileName, mapping)
+	if err != nil {
+		return
+	}
+
+	for eNumber, eDescription := range emojiList {
+		// this will index each item one by one. No need to be quick here for me, I can wait few ms for the program to start.
+		err = bleveIndex.Index(fmt.Sprintf("%d", eNumber), eDescription)
+		if err != nil {
+			logrus.WithField("emojiDescription", eDescription).WithError(err).Error("Could not index an emoji")
+		}
 	}
 	engine.index = bleveIndex
 	engine.emojis = emojiList
