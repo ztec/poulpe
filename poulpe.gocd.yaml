@@ -10,7 +10,7 @@ pipelines:
         git: ssh://git@git.riper.fr:22023/ztec/poulpe.git
         shallow_clone: false
         auto_update: true
-        branch: master
+        branch: main
     stages:
       - build:
           fetch_materials: true
@@ -66,7 +66,7 @@ pipelines:
         git: ssh://git@git.riper.fr:22023/ztec/poulpe.git
         shallow_clone: false
         auto_update: true
-        branch: master
+        branch: main
     stages:
       - deploy:
           fetch_materials: true
