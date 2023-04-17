@@ -3,9 +3,9 @@ package dataloader
 import (
 	"encoding/json"
 	"fmt"
-	"git2.riper.fr/ztec/poulpe/types"
 	"github.com/go-zoox/fetch"
 	"github.com/sirupsen/logrus"
+	"poulpe.ztec.fr/types"
 	"strings"
 )
 

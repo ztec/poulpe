@@ -1,6 +1,6 @@
 package engine
 
-import "git2.riper.fr/ztec/poulpe/types"
+import "poulpe.ztec.fr/types"
 
 type Engine interface {
 	Search(q string) ([]types.EmojiDescription, error)

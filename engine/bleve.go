@@ -3,12 +3,12 @@ package engine
 import (
 	"encoding/json"
 	"fmt"
-	"git2.riper.fr/ztec/poulpe/types"
 	"github.com/AkinAD/emoji"
 	bleve "github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/search/query"
 	"github.com/sirupsen/logrus"
 	"os"
+	"poulpe.ztec.fr/types"
 	"strconv"
 	"strings"
 )

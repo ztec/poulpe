@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"git2.riper.fr/ztec/poulpe/dataloader"
-	engine "git2.riper.fr/ztec/poulpe/engine"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
+	"poulpe.ztec.fr/dataloader"
+	engine "poulpe.ztec.fr/engine"
 	"strings"
 )
 

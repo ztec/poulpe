@@ -2,12 +2,12 @@ package cmd
 
 import (
 	"fmt"
-	"git2.riper.fr/ztec/poulpe/dataloader"
-	"git2.riper.fr/ztec/poulpe/engine"
-	"git2.riper.fr/ztec/poulpe/web"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
+	"poulpe.ztec.fr/dataloader"
+	"poulpe.ztec.fr/engine"
+	"poulpe.ztec.fr/web"
 )
 
 var server = &cobra.Command{

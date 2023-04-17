@@ -6,7 +6,7 @@ WORKDIR /app
 RUN adduser --disabled-password --gecos "" appuser
 
 ADD ./ /app
-
+ENV GOPROXY=https://proxy.golang.org
 RUN MODE=${BUILD_MODE} bin/build.sh
 
 

@@ -1,11 +1,11 @@
 package web
 
 import (
-	"git2.riper.fr/ztec/poulpe/engine"
 	"github.com/julienschmidt/httprouter"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"poulpe.ztec.fr/engine"
 )
 
 func StartServer(addr string, searchEngine engine.Engine) error {

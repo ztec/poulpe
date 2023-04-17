@@ -3,10 +3,10 @@ package web
 import (
 	"embed"
 	"encoding/json"
-	"git2.riper.fr/ztec/poulpe/engine"
-	"git2.riper.fr/ztec/poulpe/types"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"poulpe.ztec.fr/engine"
+	"poulpe.ztec.fr/types"
 )
 
 //go:embed statics

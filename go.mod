@@ -1,4 +1,4 @@
-module git2.riper.fr/ztec/poulpe
+module poulpe.ztec.fr
 
 go 1.20
 

@@ -1,10 +1,10 @@
 package engine
 
 import (
-	"git2.riper.fr/ztec/poulpe/dataloader"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"os"
+	"poulpe.ztec.fr/dataloader"
 	"testing"
 )
 
