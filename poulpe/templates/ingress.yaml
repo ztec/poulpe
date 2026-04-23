@@ -9,9 +9,20 @@ spec:
   tls:
     - hosts:
         - poulpe.ztec.fr
+        - emoji.ztec.fr
       secretName: star-ztec-fr-tls
   rules:
     - host: poulpe.ztec.fr
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: poulpe
+                port:
+                  number: 8080
+    - host: emoji.ztec.fr
       http:
         paths:
           - path: /
