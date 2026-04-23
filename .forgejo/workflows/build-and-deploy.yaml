@@ -33,8 +33,13 @@ jobs:
           git config --global user.email "butler[bot]@riper.fr"
       - name: checkout prod branch
         run: |
-          git clone ${{ github.server_url }}/${{ github.repository }} prod --branch prod --single-branch 2>/dev/null || (
-            git clone ${{ github.server_url }}/${{ github.repository }} prod &&
+          cat >~/.ssh/id_rsa <<STRING
+          ${{ secrets.GIT_SSH_KEY }}
+          STRING
+          chmod 0700 ~/.ssh/id_rsa
+          export GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes -o StrictHostKeyChecking=no -o CheckHostIP=no'
+          git clone ssh://git@git.riper.fr:22023/ztec/poulpe.git prod --branch prod --single-branch 2>/dev/null || (
+            git clone ssh://git@git.riper.fr:22023/ztec/poulpe.git prod &&
             cd prod &&
             git checkout --orphan prod &&
             git rm -rf . &&
