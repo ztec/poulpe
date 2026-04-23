@@ -27,6 +27,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: code
+      - name: configure git
+        run: |
+          git config --global user.name "Butler"
+          git config --global user.email "butler[bot]@riper.fr"
       - name: checkout prod branch
         run: |
           git clone ${{ github.server_url }}/${{ github.repository }} prod --branch prod --single-branch 2>/dev/null || (
@@ -48,8 +52,6 @@ jobs:
       - name: commit and push manifests
         run: |
           cd prod
-          git config --global user.name "Butler"
-          git config --global user.email "butler[bot]@riper.fr"
           git add -A
           git commit -m "Deploy poulpe:${{ github.ref_name }}-${{ github.run_id }}" || echo "No changes to commit"
           git push --force origin prod
