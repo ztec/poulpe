@@ -36,6 +36,10 @@ jobs:
         run: |
           cd prod
           find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+      - name: install helm
+        run: |
+          curl -L https://get.helm.sh/helm-v3.17.3-linux-amd64.tar.gz | tar xz
+          mv linux-amd64/helm /usr/local/bin/helm
       - name: generate manifests
         run: |
           helm template poulpe code/helm \
