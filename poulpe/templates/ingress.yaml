@@ -1,0 +1,23 @@
+---
+# Source: poulpe/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: poulpe-ingress
+spec:
+  ingressClassName: haproxy-public
+  tls:
+    - hosts:
+        - poulpe.ztec.fr
+      secretName: star-ztec-fr-tls
+  rules:
+    - host: poulpe.ztec.fr
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: poulpe
+                port:
+                  number: 8080
