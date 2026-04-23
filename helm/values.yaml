@@ -16,7 +16,7 @@ resources:
     cpu: 1
     memory: 100Mi
 
-replicas: 5
+replicas: 1
 
 prometheus:
   active: true
