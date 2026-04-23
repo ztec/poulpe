@@ -1,0 +1,55 @@
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+jobs:
+  Build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+      - name: Docker login
+        uses: docker/login-action@v3
+        with:
+          registry: git2.riper.fr
+          username: ${{ vars.DOCKER_LOGIN }}
+          password: ${{ vars.DOCKER_TOKEN }}
+      - name: Docker build and push
+        run: docker buildx build --push -t git2.riper.fr/ztec/poulpe:${{ github.ref_name }}-${{ github.run_id }} .
+
+  Deploy:
+    runs-on: ubuntu-24.04
+    needs: Build
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+        with:
+          path: code
+      - name: checkout prod branch
+        run: |
+          git clone ${{ github.server_url }}/${{ github.repository }} prod --branch prod --single-branch 2>/dev/null || (
+            git clone ${{ github.server_url }}/${{ github.repository }} prod &&
+            cd prod &&
+            git checkout --orphan prod &&
+            git rm -rf . &&
+            git commit --allow-empty -m "Initialize prod branch" &&
+            git push origin prod
+          )
+      - name: generate manifests
+        run: |
+          cd prod
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+          helm template poulpe ../code/helm \
+            --set-string image.name=git2.riper.fr/ztec/poulpe:${{ github.ref_name }}-${{ github.run_id }} \
+            --output-dir . \
+            --namespace poulpe
+      - name: commit and push manifests
+        run: |
+          cd prod
+          git config --global user.name "Butler"
+          git config --global user.email "butler[bot]@riper.fr"
+          git add -A
+          git commit -m "Deploy poulpe:${{ github.ref_name }}-${{ github.run_id }}" || echo "No changes to commit"
+          git push --force origin prod
