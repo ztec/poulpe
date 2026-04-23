@@ -1,0 +1,55 @@
+---
+# Source: poulpe/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "poulpe"
+  labels:
+    app: poulpe
+    release: poulpe
+    heritage: Helm
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: poulpe
+      release: poulpe
+  template:
+    metadata:
+      labels:
+        app: poulpe
+        release: poulpe
+      annotations:
+        date/deploy-date: "2026-04-23 01:48:42.505696364 +0000 UTC m=+0.039571730"
+        prometheus.io/path: "/metrics"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+    spec:
+      imagePullSecrets:
+        - name: git2.riper.fr-key
+      containers:
+        - name: poulpe
+          image: "git2.riper.fr/ztec/poulpe:main-2463"
+          imagePullPolicy: IfNotPresent
+          env:
+          ports:
+            - name: http
+              containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 3
+          resources:
+            limits:
+              memory: 100Mi
+            requests:
+              cpu: 1
+              memory: 100Mi

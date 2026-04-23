@@ -1,0 +1,19 @@
+---
+# Source: poulpe/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: poulpe
+  labels:
+    app: poulpe
+    release: poulpe
+    heritage: Helm
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+  selector:
+    app: poulpe
+    release: poulpe
